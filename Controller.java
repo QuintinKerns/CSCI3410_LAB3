@@ -14,7 +14,7 @@ class Controller{
 
     public Connection getConnection(){
         Class.forName("com.mysql.jdbc.Driver");
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/sonoo","root","root");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/***dname***","root","root");
     }
 
     public ResultSet queryDB(String query, Connection cn){
