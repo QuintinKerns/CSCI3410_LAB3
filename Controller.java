@@ -10,8 +10,7 @@ class Controller {
 
 	static Connection conn;
 
-	public static void main(String[] args) throws ClassNotFoundException,
-			SQLException, InterruptedException {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException, InterruptedException {
 		conn = getConnection();
 		System.out.println("--- Connected ---");
 		newMenu(); // Empties the console and creates a new menu and input
@@ -25,12 +24,10 @@ class Controller {
 	}
 
 	public static void printMainMenu() {
-		System.out.println(" Main Menu \n" + "-----------\n"
-				+ "1. Create DB and Tables\n" + "2. Create Department Table\n"
-				+ "3. Create Project Table\n" + "4. Insert Employee\n"
-				+ "5. Insert Works_on\n" + "6. Remove Employee by ssn\n"
-				+ "7. Remove Works_on by essn and pno\n" + "8. Query DB\n"
-				+ "9. Fetch Metadata\n");
+		System.out.println(" Main Menu \n" + "-----------\n" + "1. Create DB and Tables\n"
+				+ "2. Create Department Table\n" + "3. Create Project Table\n" + "4. Insert Employee\n"
+				+ "5. Insert Works_on\n" + "6. Remove Employee by ssn\n" + "7. Remove Works_on by essn and pno\n"
+				+ "8. Query DB\n" + "9. Fetch Metadata\n");
 	}
 
 	public static void inputHandler() throws InterruptedException, SQLException {
@@ -48,8 +45,7 @@ class Controller {
 		}
 		case "2": {
 			try {
-				queryDB("CREATE TABLE department (Dlocation varchar(255),"
-						+ "Dname varchar(255)," + "Dnumber int,"
+				queryDB("CREATE TABLE department (Dlocation varchar(255)," + "Dname varchar(255)," + "Dnumber int,"
 						+ "Mgr_ssn int," + "PRIMARY KEY(Dnumber)" + ");");
 				newMenu();
 			} catch (SQLException sqlEx) {
@@ -60,8 +56,7 @@ class Controller {
 		}
 		case "3": {
 			try {
-				queryDB("CREATE TABLE project (Dnum int,"
-						+ "Plocation varchar(255)," + "Pname varchar(255),"
+				queryDB("CREATE TABLE project (Dnum int," + "Plocation varchar(255)," + "Pname varchar(255),"
 						+ "Pnumber int," + "PRIMARY KEY(Pnumber)" + ");");
 				newMenu();
 			} catch (SQLException sqlEx) {
@@ -73,21 +68,20 @@ class Controller {
 		case "4": {
 			String query = "";
 			try {
-				System.out
-						.println("Enter Employee Information seperated by commas. <First name, Last name, Ssn, Address, Dno>");
+				System.out.println(
+						"Enter Employee Information seperated by commas. <First name, Last name, Ssn, Address, Dno>");
 				String in = scan.nextLine();
 				query = "INSERT INTO employee VALUES (" + in + ");";
 				queryDB(query);
 			} catch (SQLException sqlEx) {
-				System.out
-						.println("Employee already exists or query was entered incorrectly. Continue anyway? (y or n) This will overwrite existing employee data");
+				System.out.println(
+						"Employee already exists or query was entered incorrectly. Continue anyway? (y or n) This will overwrite existing employee data");
 				String overwrite = scan.nextLine();
 				if (overwrite.equals("y")) {
 					try {
-						queryDB("DELETE FROM employee WHERE ssn LIKE "
-								+ getSSNFromQuery(query) + ";"); // Delete
-																	// existing
-																	// employee
+						queryDB("DELETE FROM employee WHERE ssn LIKE " + getSSNFromQuery(query) + ";"); // Delete
+																										// existing
+																										// employee
 						queryDB(query); // Create new employee like the existing
 										// one
 					} catch (SQLException e) {
@@ -107,8 +101,8 @@ class Controller {
 		case "5": {
 			System.out.println("Enter Employee SSN for deletion");
 			String in = scan.nextLine();
-			System.out
-					.println("Are you sure you want to continue? The tuple you are trying to delete may have a foreign key. (y or n)");
+			System.out.println(
+					"Are you sure you want to continue? The tuple you are trying to delete may have a foreign key. (y or n)");
 			String overwrite = scan.nextLine();
 			if (overwrite.toLowerCase().equals("y")) {
 				try {
@@ -135,19 +129,17 @@ class Controller {
 		case "7": {
 			String query = "";
 			try {
-				System.out
-						.println("Enter Work_On Information seperated by commas. <ESSN, Pno, Hours>");
+				System.out.println("Enter Work_On Information seperated by commas. <ESSN, Pno, Hours>");
 				String in = scan.nextLine();
 				query = "INSERT INTO employee VALUES (" + in + ");";
 				queryDB(query);
 			} catch (SQLException sqlEx) {
-				System.out
-						.println("Employee already exists or query was entered incorrectly. Continue anyway? (y or n) This will overwrite existing employee data");
+				System.out.println(
+						"Works_on tuple already exists or query was entered incorrectly. Continue anyway? (y or n) This will overwrite existing employee data");
 				String overwrite = scan.nextLine();
 				if (overwrite.equals("y")) {
 					try {
-						queryDB("DELETE FROM employee WHERE ssn LIKE "
-								+ getESSNFromQuery(query) + ";");
+						queryDB("DELETE FROM employee WHERE ssn LIKE " + getESSNFromQuery(query) + ";");
 						queryDB(query);
 					} catch (SQLException e) {
 						System.out.println("Returning to main menu...");
@@ -165,20 +157,19 @@ class Controller {
 		}
 
 		case "8": {
-			System.out
-					.print("Enter the SQL Query you would like sent to the server.");
+			System.out.print("Enter the SQL Query you would like sent to the server.");
 			String Query = scan.next();
 			try {
 				ResultSet rs = queryDB(Query);
 				rs.beforeFirst();
 				while (rs.next()) {
-					System.out.println(rs.getString("ESSN") +
-						" " + rs.getInt("Pno") + rs.getString("getHours"));
+					System.out.println(rs.getString(1) + " " + rs.getString(2) + rs.getString(3));
 				}
 				newMenu();
 			} catch (SQLException e) {
 				newMenu();
 			}
+			break;
 
 		}
 
@@ -194,14 +185,15 @@ class Controller {
 			while (resultWkn.next())
 				columns.add(resultWkn.getString("COLUMN_NAME"));
 			System.out.println(columns);
+			newMenu();
+			break;
 		}
 
 		}
 	}
 
 	private static String getESSNFromQuery(String query) {
-		return query.substring(0, query.indexOf(','))
-					.trim();
+		return query.substring(0, query.indexOf(',')).trim();
 	}
 
 	private static String getSSNFromQuery(String query) {
@@ -213,10 +205,9 @@ class Controller {
 		return ssn;
 	}
 
-	public static Connection getConnection() throws SQLException,
-			ClassNotFoundException {
+	public static Connection getConnection() throws SQLException, ClassNotFoundException {
 		// Class.forName("com.mysql.jdbc.Driver");
-		return DriverManager.getConnection("jdbc:mysql://localhost:3306/");
+		return DriverManager.getConnection("jdbc:mysql://localhost:3306/csci3410_lab3", "root", "");
 	}
 
 	public static ResultSet queryDB(String query) throws SQLException {
