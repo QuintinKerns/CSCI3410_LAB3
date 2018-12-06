@@ -17,7 +17,7 @@ class Controller {
 					// handler
 	}
 
-	public static void newMenu() throws InterruptedException {
+	public static void newMenu() throws InterruptedException, SQLException {
 		System.out.flush();
 		printMainMenu();
 		inputHandler();
@@ -32,33 +32,42 @@ class Controller {
 				+ "9. Fetch Metadata\n");
 	}
 
-	public static void inputHandler() throws InterruptedException {
+	public static void inputHandler() throws InterruptedException, SQLException {
 		String input = scan.nextLine();
 		switch (input) {
 		case "1": {
 			try {
 				queryDB("CREATE DATABASE " + dbname);
+				newMenu();
 			} catch (SQLException sqlEx) {
 				System.out.println("Database already exists!");
+				newMenu();
 			}
+			break;
 		}
 		case "2": {
 			try {
 				queryDB("CREATE TABLE department (Dlocation varchar(255),"
 						+ "Dname varchar(255)," + "Dnumber int,"
 						+ "Mgr_ssn int," + "PRIMARY KEY(Dnumber)" + ");");
+				newMenu();
 			} catch (SQLException sqlEx) {
-				System.out.println("Department Table already exists!");
+				System.out.println("Department table already exists!");
+				newMenu();
 			}
+			break;
 		}
 		case "3": {
 			try {
 				queryDB("CREATE TABLE project (Dnum int,"
 						+ "Plocation varchar(255)," + "Pname varchar(255),"
 						+ "Pnumber int," + "PRIMARY KEY(Pnumber)" + ");");
+				newMenu();
 			} catch (SQLException sqlEx) {
-				System.out.println("Department Table already exists!");
+				System.out.println("Project table already exists!");
+				newMenu();
 			}
+			break;
 		}
 		case "4": {
 			String query = "";
@@ -74,24 +83,74 @@ class Controller {
 				String overwrite = scan.nextLine();
 				if (overwrite.equals("y")) {
 					try {
-						queryDB("DELETE");
+						queryDB("DELETE FROM employee WHERE ssn LIKE "
+								+ getSSNFromQuery(query) + ";"); // Delete
+																	// existing
+																	// employee
+						queryDB(query); // Create new employee like the existing
+										// one
 					} catch (SQLException e) {
 						System.out.println(e);
 						System.out.println("Returning to main menu...");
 						Thread.sleep(3000);
 						newMenu();
-						
 					}
 				} else {
 					newMenu();
 				}
+			} finally {
+				newMenu();
 			}
+			break;
 		}
 		case "5": {
+			System.out.println("Enter Employee SSN for deletion");
+			String in = scan.nextLine();
+			System.out
+					.println("Are you sure you want to continue? The tuple you are trying to delete may have a foreign key. (y or n)");
+			String overwrite = scan.nextLine();
+			if (overwrite.toLowerCase().equals("y")) {
+				try {
+					queryDB("DELETE employee WHERE ssn LIKE " + in);
+					newMenu();
+				} catch (SQLException e) {
+					newMenu();
+				}
+			} else {
+				newMenu();
+			}
+
+		}
+		case "6": {
+			System.out.println("Enter Works_on info for deletion. <essn, pno>");
+			String in = scan.nextLine();
+			String essn = in.substring(0, in.indexOf(",")).trim();
+			String pno = in.substring(in.indexOf(",")).trim();
+			String query = "DELETE FROM works_on WHERE " + essn + ",  ;"; //Double Check This
+			queryDB(query);
+		}
+
+		case "7": {
 
 		}
 
+		case "8": {
+
 		}
+
+		case "9": {
+
+		}
+		}
+	}
+
+	private static String getSSNFromQuery(String query) {
+		String ssn = "";
+		ssn = ssn.substring(ssn.indexOf(","));
+		ssn = ssn.substring(ssn.indexOf(","));
+		ssn = ssn.substring(0, ssn.indexOf(","));
+		ssn.trim();
+		return ssn;
 	}
 
 	public static Connection getConnection() throws SQLException,
