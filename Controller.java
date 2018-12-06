@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 class Controller {
@@ -124,24 +125,83 @@ class Controller {
 		case "6": {
 			System.out.println("Enter Works_on info for deletion. <essn, pno>");
 			String in = scan.nextLine();
-			String essn = in.substring(0, in.indexOf(",")).trim();
-			String pno = in.substring(in.indexOf(",")).trim();
-			String query = "DELETE FROM works_on WHERE " + essn + ",  ;"; //Double Check This
+			String essn = in.substring(0, in.indexOf(",") + 1).trim();
+			String pno = in.substring(in.indexOf(",") + 1).trim();
+			String query = "DELETE FROM works_on WHERE " + essn + ", " + pno + ";";
 			queryDB(query);
+			newMenu();
 		}
 
 		case "7": {
+			String query = "";
+			try {
+				System.out
+						.println("Enter Work_On Information seperated by commas. <ESSN, Pno, Hours>");
+				String in = scan.nextLine();
+				query = "INSERT INTO employee VALUES (" + in + ");";
+				queryDB(query);
+			} catch (SQLException sqlEx) {
+				System.out
+						.println("Employee already exists or query was entered incorrectly. Continue anyway? (y or n) This will overwrite existing employee data");
+				String overwrite = scan.nextLine();
+				if (overwrite.equals("y")) {
+					try {
+						queryDB("DELETE FROM employee WHERE ssn LIKE "
+								+ getESSNFromQuery(query) + ";");
+						queryDB(query);
+					} catch (SQLException e) {
+						System.out.println("Returning to main menu...");
+						Thread.sleep(3000);
+						newMenu();
+					}
+				} else {
+					newMenu();
+				}
+			} finally {
+				newMenu();
+			}
+			break;
 
 		}
 
 		case "8": {
+			System.out
+					.print("Enter the SQL Query you would like sent to the server.");
+			String Query = scan.next();
+			try {
+				ResultSet rs = queryDB(Query);
+				rs.beforeFirst();
+				while (rs.next()) {
+					System.out.println(rs.getString("ESSN") +
+						" " + rs.getInt("Pno") + rs.getString("getHours"));
+				}
+				newMenu();
+			} catch (SQLException e) {
+				newMenu();
+			}
 
 		}
 
 		case "9": {
+			ArrayList<String> columns = new ArrayList<String>();
+			DatabaseMetaData dbData = conn.getMetaData();
+			ResultSet resultEmp = dbData.getPrimaryKeys(null, null, "employee");
+			ResultSet resultWkn = dbData.getPrimaryKeys(null, null, "works_on");
+			columns.add("Employee Primary Keys");
+			while (resultEmp.next())
+				columns.add(resultEmp.getString("COLUMN_NAME"));
+			columns.add("Works_on Primary Keys:");
+			while (resultWkn.next())
+				columns.add(resultWkn.getString("COLUMN_NAME"));
+			System.out.println(columns);
+		}
 
 		}
-		}
+	}
+
+	private static String getESSNFromQuery(String query) {
+		return query.substring(0, query.indexOf(','))
+					.trim();
 	}
 
 	private static String getSSNFromQuery(String query) {

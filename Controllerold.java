@@ -1,7 +1,7 @@
 import java.sql.*;
 import java.util.Scanner;
 
-class Controller {
+class Controllerold {
 	public static final String dbname = "csci3410_lab3";
 	public static final String dbuser = "root";
 	public static final String dbpass = "root";
@@ -131,72 +131,17 @@ class Controller {
 		}
 
 		case "7": {
-			String query = "";
-			try {
-				System.out
-						.println("Enter Work_On Information seperated by commas. <ESSN, Pno, Hours>");
-				String in = scan.nextLine();
-				query = "INSERT INTO employee VALUES (" + in + ");";
-				queryDB(query);
-			} catch (SQLException sqlEx) {
-				System.out
-						.println("Employee already exists or query was entered incorrectly. Continue anyway? (y or n) This will overwrite existing employee data");
-				String overwrite = scan.nextLine();
-				if (overwrite.equals("y")) {
-					try {
-						queryDB("DELETE FROM employee WHERE ssn LIKE "
-								+ getESSNFromQuery(query) + ";"); // Delete
-						// existing
-						// employee
-						queryDB(query); // Create new employee like the existing
-						// one
-					} catch (SQLException e) {
-						System.out.println(e);
-						System.out.println("Returning to main menu...");
-						Thread.sleep(3000);
-						newMenu();
-					}
-				} else {
-					newMenu();
-				}
-			} finally {
-				newMenu();
-			}
-			break;
-
 
 		}
 
 		case "8": {
-			System.out.print("Enter the SQL Query you would like sent to the server.");
-			String Query = scan.next();
-			try {
-				queryDB();
-			} catch (SQLException e) {
-				newMenu();
-			}
 
 		}
 
 		case "9": {
-			public ArrayList<String> findPrimaryKeyColumnNames(
-
-				ArrayList<String> columns = new ArrayList<String>();
-				DatabaseMetaData dbData = connection.getMetaData();
-				Resultset result = dbData.getPrimaryKeys(employee, Works_On);
-				while (result.next())
-					columns.add(result.getString("COLUMN_NAME"));
-
-				/* you should... PROBABLY... close your connection ;) */
-
-				return columns;
-			}
 
 		}
 		}
-	}
-
-	private static String getESSNFromQuery(String query) {
 	}
 
 	private static String getSSNFromQuery(String query) {
